@@ -29,7 +29,10 @@ async function handleUserLogin(req, res) {
   }
   const token = setUser(user);
   res.cookie("uidToken", token);
-  res.json({ message: 'User logged in successfully', user: user, token: token });
+  res.json({
+    message: 'User logged in successfully',
+    data: { userName: user.name, userEmail: user.email }
+  });
 }
 
 async function handleUserLogout(req, res) {
@@ -50,8 +53,8 @@ async function handleUserSignUp(req, res) {
     return res.status(400).json({ message: 'All fields (name, email, password) are required!' });
   }
   // Check if email already exists
-  const existingUser = await User.findOne({ email });
-  if (existingUser) {
+  const isExistingUser = await User.findOne({ email });
+  if (isExistingUser) {
     return res.status(400).json({ message: 'Email already exists!' });
   }
   //checked password length
@@ -59,12 +62,12 @@ async function handleUserSignUp(req, res) {
     return res.status(400).json({ message: 'Password should be at least 6 characters long!' });
   }
   try {
-    const newUser = new User({
+    const user = new User({
       name,
       email,
       password,
     });
-    await User.create(newUser);
+    await User.create(user);
     res.status(201).json({ message: 'User created successfully' });
   } catch (error) {
     console.error(error);

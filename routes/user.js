@@ -4,7 +4,7 @@ const { restrictToLoggedInUserOnly } = require("../middlewares/auth");
 
 const router = express.Router();
 
-router.get("/user", restrictToLoggedInUserOnly, handleGetAllUsers);
+router.get("/", restrictToLoggedInUserOnly, handleGetAllUsers);
 router.post("/signup", handleUserSignUp);
 router.post("/login", handleUserLogin);
 router.post("/logout", handleUserLogout);
