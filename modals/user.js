@@ -14,8 +14,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    minlength: 4,
-    select: false, // Don't include password in the output
+    minlength: 6,
   }
 }, { timestamps: true });
 
