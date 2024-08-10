@@ -1,0 +1,12 @@
+Upcomming feature list
+--------------------------------------------------------------
+1. Client review API development
+2. Contact us API development with also mail support.
+3. project images manage via multer packages
+
+
+
+issues list
+--------------------------------------------------------------
+1. not showing proper error massage for handleGetProjectById, handleUpdateProjectById, HandleDeleteProjectById with invalid id.
+currently it shows server error, but it should be project not found!

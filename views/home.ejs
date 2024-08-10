@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Home</title>
+</head>
+
+<body>
+  <div>
+    <h1>Admin panal</h1>
+    <div>
+      <h2>Add new project</h2>
+      <form action="/api/project" method="POST" enctype="multipart/form-data" >
+        <label>Cover Photo</label>
+        <input type="file" name="coverImage" required><br>
+
+        <label>Title</label>
+        <input type="text" name="title" required><br>
+
+        <label>Description</label>
+        <textarea name="description" required></textarea><br>
+
+        <label>Status</label>
+        <input type="text" name="status" required><br>
+
+        <label>Targeted Platform</label>
+        <input type="text" name="targetedPlatform"> <br>
+
+        <label>Used Technology</label>
+        <input type="text" name="usedTechnology"><br><br>
+
+        <input type="submit" >
+      </form>
+    </div>
+  </div>
+</body>
+
+</html>

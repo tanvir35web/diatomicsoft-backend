@@ -1,4 +1,20 @@
 const Project = require("../modals/project");
+const multer = require('multer');
+const path = require('path');
+
+// Multer setup for file management like photos
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.resolve(`public/file-upload/`))
+  },
+  filename: function (req, file, cb) {
+    const fileName = `${Date.now()}-${file.originalname}`;
+    cb(null, fileName);
+  }
+})
+
+const upload = multer({ storage: storage })
+
 
 async function handleGetAllProjects(req, res) {
   try {
@@ -55,7 +71,7 @@ async function handleCreateNewProject(req, res) {
   const { title, description, status, usedTechnology, targetedPlatform } = req.body;
   // Check required fields
   if (!title || !description || !status || !usedTechnology || !targetedPlatform) {
-    return res.status(400).json({ message: 'All fields (title, description, status, usedTechnology, targetedPlatform) are required!' });
+    return res.status(400).json({ message: 'All fields (title, coverImageURL, description, status, usedTechnology, targetedPlatform) are required!' });
   }
   // Check if project already exists
   const isExistingProject = await Project.findOne({ title });
@@ -67,12 +83,19 @@ async function handleCreateNewProject(req, res) {
     return res.status(400).json({ message: 'Invalid status. Status must be one of (active or inactive or completed)' });
   }
   try {
-    const project = new Project({ title, description, status, usedTechnology, targetedPlatform });
+    const project = new Project({
+      coverImageURL: `/file-upload/${req.file.filename}`,
+      title,
+      description,
+      status,
+      usedTechnology,
+      targetedPlatform
+    });
     await Project.create(project);
     res.status(201).json({ message: 'Project created successfully', data: project });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server Error!' });
+    res.status(500).json({ message: 'Server Error from project create!' });
   }
 };
 
@@ -81,5 +104,6 @@ module.exports = {
   handleGetProjectById,
   handleUpdateProjectById,
   handleDeleteProjectById,
-  handleCreateNewProject
+  handleCreateNewProject,
+  upload,
 }; 
