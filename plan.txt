@@ -2,7 +2,7 @@ Upcomming feature list
 --------------------------------------------------------------
 1. Client review API development
 2. Contact us API development with also mail support.
-3. project images manage via multer packages
+
 
 
 

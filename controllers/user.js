@@ -1,4 +1,4 @@
-const User = require("../modals/user");
+const User = require("../models/user");
 const { setUser } = require("../services/auth");
 
 

@@ -1,4 +1,4 @@
-const Project = require("../modals/project");
+const Project = require("../models/project");
 const multer = require('multer');
 const path = require('path');
 
