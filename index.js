@@ -13,7 +13,7 @@ const app = express();
 const PORT = process.env.PORT;
 
 //connect to MongoDB database
-connectToMongoDB("mongodb://127.0.0.1:27017");
+connectToMongoDB(process.env.MONGO_URL);
 
 // Set up EJS for rendering views
 app.set("view engine", "ejs");
