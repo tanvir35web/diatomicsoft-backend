@@ -3,6 +3,7 @@ require('dotenv').config();
 const { connectToMongoDB } = require("./connectMongoDB");
 const apiRouter = require("./routes/user");
 const projectRouter = require("./routes/project");
+const clientsReviewRouter = require("./routes/clientsReview");
 const cookieParser = require("cookie-parser");
 const path = require('path');
 const staticRouter = require("./routes/staticRoutes");
@@ -25,8 +26,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 //routes
-app.use("/api/user", apiRouter);
-app.use("/api/project", projectRouter);
+app.use("/api", apiRouter);
+app.use("/api/projects", projectRouter);
+app.use("/api/clientReviews", clientsReviewRouter);
 app.use('/', restrictToLoggedInUserOnly, staticRouter);
 
 

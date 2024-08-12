@@ -31,7 +31,7 @@ async function handleUserLogin(req, res) {
   res.cookie("uidToken", token);
   res.json({
     message: 'User logged in successfully',
-    data: { userName: user.name, userEmail: user.email }
+    data: { userName: user.name, userEmail: user.email, token: token }
   });
 }
 
