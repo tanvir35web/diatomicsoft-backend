@@ -8,6 +8,7 @@ const cookieParser = require("cookie-parser");
 const path = require('path');
 const staticRouter = require("./routes/staticRoutes");
 const { restrictToLoggedInUserOnly } = require("./middlewares/auth");
+const cors = require('cors')
 
 
 const app = express();
@@ -25,6 +26,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.resolve("./public")));
+
+app.use(cors());
 
 //routes
 app.use("/api", apiRouter);
