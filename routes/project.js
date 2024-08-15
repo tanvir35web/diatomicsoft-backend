@@ -15,7 +15,7 @@ router.get("/", handleGetAllProjects);
 router.get("/:id", handleGetProjectById);
 router.patch("/:id", restrictToLoggedInUserOnly, handleUpdateProjectById);
 router.delete("/:id", restrictToLoggedInUserOnly, handleDeleteProjectById);
-router.post("/", restrictToLoggedInUserOnly, upload.single('coverImage'), handleCreateNewProject);
+router.post("/", upload.single('coverImage'), handleCreateNewProject);
 
 
 module.exports = router;

@@ -8,11 +8,17 @@ const cookieParser = require("cookie-parser");
 const path = require('path');
 const staticRouter = require("./routes/staticRoutes");
 const { restrictToLoggedInUserOnly } = require("./middlewares/auth");
+const { upload } = require('./controllers/project');
+const FormData = require('form-data');
 const cors = require('cors')
+const axios = require('axios');
+const fs = require('fs');
+
 
 
 const app = express();
 const PORT = process.env.PORT;
+
 
 //connect to MongoDB database
 connectToMongoDB(process.env.MONGO_URL);
@@ -33,7 +39,8 @@ app.use(cors());
 app.use("/api", apiRouter);
 app.use("/api/projects", projectRouter);
 app.use("/api/clientReviews", clientsReviewRouter);
-app.use('/', restrictToLoggedInUserOnly, staticRouter);
+// app.use('/', restrictToLoggedInUserOnly, staticRouter);
+app.use('/', staticRouter);
 
 
 app.listen(PORT, console.log(`Server listening on ${PORT}`));
