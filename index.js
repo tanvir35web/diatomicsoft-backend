@@ -33,7 +33,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.resolve("./public")));
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000', // your frontend URL
+  credentials: true, // Allow credentials (cookies) to be sent
+}));
 
 //routes
 app.use("/api", apiRouter);
