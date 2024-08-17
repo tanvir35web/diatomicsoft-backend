@@ -28,7 +28,9 @@ async function handleUserLogin(req, res) {
     return res.status(401).json({ message: 'Invalid email or password!' });
   }
   const token = setUser(user);
-  res.cookie("uidToken", token);
+  res.cookie("uidToken", token, {
+    sameSite: 'None',  // allow cross-site requests
+  });
   res.json({
     message: 'User logged in successfully',
     data: { userName: user.name, userEmail: user.email, token: token }
