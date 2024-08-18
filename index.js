@@ -33,8 +33,21 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.resolve("./public")));
 
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://diatomicsoft.vercel.app',
+  // add more origins here
+];
+
 app.use(cors({
-  origin: 'http://localhost:3000 || https://diatomicsoft.vercel.app', 
+  origin: (origin, callback) => {
+    // If the origin is in the allowedOrigins array or it's undefined (for server-to-server requests), allow it
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true, // Allow credentials (cookies) to be sent
 }));
 
