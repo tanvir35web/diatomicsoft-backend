@@ -34,7 +34,7 @@ app.use(cookieParser());
 app.use(express.static(path.resolve("./public")));
 
 app.use(cors({
-  origin: 'http://localhost:3000', // your frontend URL
+  origin: 'http://localhost:3000 || https://diatomicsoft.vercel.app', 
   credentials: true, // Allow credentials (cookies) to be sent
 }));
 
