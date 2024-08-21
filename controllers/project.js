@@ -4,6 +4,8 @@ const path = require('path');
 const FormData = require('form-data');
 const axios = require('axios');
 const fs = require('fs');
+const { body, validationResult } = require('express-validator');
+
 
 // multer config
 const storage = multer.diskStorage({
@@ -15,6 +17,7 @@ const storage = multer.diskStorage({
     cb(null, fileName);
   }
 });
+
 
 const upload = multer({ storage: storage });
 
@@ -72,85 +75,81 @@ async function handleDeleteProjectById(req, res) {
   }
 };
 
-// async function handleCreateNewProject(req, res) {
-//   const { title, description, status, usedTechnology, targetedPlatform } = req.body;
-//   // Check required fields
-//   if (!title || !description || !status || !usedTechnology || !targetedPlatform) {
-//     return res.status(400).json({ message: 'All fields (title, coverImageURL, description, status, usedTechnology, targetedPlatform) are required!' });
-//   }
-//   // Check if project already exists
-//   const isExistingProject = await Project.findOne({ title });
-//   if (isExistingProject) {
-//     return res.status(400).json({ message: 'Project with the same title already exists!' });
-//   }
-//   //chech status enum
-//   if (!['active', 'inactive', 'completed'].includes(status)) {
-//     return res.status(400).json({ message: 'Invalid status. Status must be one of (active or inactive or completed)' });
-//   }
-//   try {
-//     const project = new Project({
-//       coverImageURL: `/upload/${req.file.filename}`,
-//       title,
-//       description,
-//       status,
-//       usedTechnology,
-//       targetedPlatform
-//     });
-//     await Project.create(project);
-//     res.status(201).json({ message: 'Project created successfully', data: project });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Server Error from project create!' });
-//   }
-// };
+const validateProject = [
+  body('title').notEmpty().withMessage('The title field is required.'),
+  body('description').notEmpty().withMessage('The description field is required.'),
+  body('status')
+    .notEmpty()
+    .withMessage('The status field is required.')
+    .isIn(['active', 'inactive', 'completed'])
+    .withMessage('Invalid status. Status must be one of (active, inactive, completed).'),
+  body('usedTechnology').notEmpty().withMessage('The usedTechnology field is required.'),
+  body('targetedPlatform').notEmpty().withMessage('The targetedPlatform field is required.'),
+];
 
 async function handleCreateNewProject(req, res) {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    const groupedErrors = errors.array().reduce((acc, err) => {
+      if (!acc[err.path]) {
+        acc[err.path] = [];
+      }
+      acc[err.path].push(err.msg);
+      return acc;
+    }, {});
+
+    const firstErrorMessage = errors.array()[0].msg;
+    const additionalErrorsCount = errors.array().length - 1;
+    const summaryMessage = additionalErrorsCount > 0
+      ? `${firstErrorMessage} (and ${additionalErrorsCount} more error${additionalErrorsCount > 1 ? 's' : ''})`
+      : firstErrorMessage;
+
+    return res.status(400).json({
+      message: summaryMessage,
+      errors: groupedErrors,
+    });
+  }
+
   const { title, description, status, usedTechnology, targetedPlatform } = req.body;
 
-  // Check required fields
-  if (!title || !description || !status || !usedTechnology || !targetedPlatform) {
-    return res.status(400).json({ message: 'All fields (title, coverImageURL, description, status, usedTechnology, targetedPlatform) are required!' });
-  }
-
-  // Check if project already exists
-  const isExistingProject = await Project.findOne({ title });
-  if (isExistingProject) {
-    return res.status(400).json({ message: 'Project with the same title already exists!' });
-  }
-
-  // Check status enum
-  if (!['active', 'inactive', 'completed'].includes(status)) {
-    return res.status(400).json({ message: 'Invalid status. Status must be one of (active or inactive or completed)' });
-  }
-
-  const IMGBB_API_KEY = process.env.IMGBB_API_KEY;
-
   try {
-    // Upload image to ImageBB
-    const filePath = path.resolve('upload/', req.file.filename);
-    const formData = new FormData();
-    formData.append('image', fs.createReadStream(filePath));
+    // Check if project already exists
+    const isExistingProject = await Project.findOne({ title });
+    if (isExistingProject) {
+      return res.status(400).json({ message: 'Project with the same title already exists!' });
+    }
 
-    const response = await axios.post(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, formData, {
-      headers: {
-        ...formData.getHeaders(),
-      },
-    });
+    let imageUrl = null;
 
-    // Delete the local file after successful upload
-    fs.unlinkSync(filePath);
+    // Check if a file is uploaded
+    if (req.file) {
+      // Upload image to ImageBB
+      const filePath = path.resolve('upload/', req.file.filename);
+      const formData = new FormData();
+      formData.append('image', fs.createReadStream(filePath));
 
-    // Get the ImageBB URL
-    const imageUrl = response.data.data.url;
+      const response = await axios.post(`https://api.imgbb.com/1/upload?key=${process.env.IMGBB_API_KEY}`, formData, {
+        headers: {
+          ...formData.getHeaders(),
+        },
+      });
 
-    // Create a new project with the ImageBB URL
+      // Delete the local file after successful upload
+      fs.unlinkSync(filePath);
+
+      // Get the ImageBB URL
+      imageUrl = response.data.data.url;
+    }
+
+    // Create a new project with or without the ImageBB URL
     const project = new Project({
-      coverImageURL: imageUrl, // Use the ImageBB URL
+      coverImageURL: imageUrl, // Use the ImageBB URL if available
       title,
       description,
       status,
       usedTechnology,
-      targetedPlatform
+      targetedPlatform,
     });
 
     await project.save();
@@ -162,6 +161,7 @@ async function handleCreateNewProject(req, res) {
   }
 }
 
+
 module.exports = {
   handleGetAllProjects,
   handleGetProjectById,
@@ -169,4 +169,5 @@ module.exports = {
   handleDeleteProjectById,
   handleCreateNewProject,
   upload,
+  validateProject,
 }; 

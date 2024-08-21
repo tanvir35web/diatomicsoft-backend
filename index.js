@@ -8,11 +8,7 @@ const cookieParser = require("cookie-parser");
 const path = require('path');
 const staticRouter = require("./routes/staticRoutes");
 const { restrictToLoggedInUserOnly } = require("./middlewares/auth");
-const { upload } = require('./controllers/project');
-const FormData = require('form-data');
 const cors = require('cors')
-const axios = require('axios');
-const fs = require('fs');
 
 
 
@@ -35,20 +31,20 @@ app.use(express.static(path.resolve("./public")));
 
 const allowedOrigins = [
   'http://localhost:3000',
+  'http://localhost:8000',
   'https://diatomicsoft.vercel.app',
   // add more origins here
 ];
 
 app.use(cors({
   origin: (origin, callback) => {
-    // If the origin is in the allowedOrigins array or it's undefined (for server-to-server requests), allow it
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true, // Allow credentials (cookies) to be sent
+  credentials: true, 
 }));
 
 //routes
