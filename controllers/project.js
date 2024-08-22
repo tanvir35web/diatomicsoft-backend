@@ -105,7 +105,7 @@ async function handleCreateNewProject(req, res) {
       ? `${firstErrorMessage} (and ${additionalErrorsCount} more error${additionalErrorsCount > 1 ? 's' : ''})`
       : firstErrorMessage;
 
-    return res.status(400).json({
+    return res.status(422).json({
       message: summaryMessage,
       errors: groupedErrors,
     });
@@ -117,7 +117,7 @@ async function handleCreateNewProject(req, res) {
     // Check if project already exists
     const isExistingProject = await Project.findOne({ title });
     if (isExistingProject) {
-      return res.status(400).json({ message: 'Project with the same title already exists!' });
+      return res.status(422).json({ message: 'Project with the same title already exists!' });
     }
 
     let imageUrl = null;
