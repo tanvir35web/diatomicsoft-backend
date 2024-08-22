@@ -49,9 +49,9 @@ async function handleGetProjectById(req, res) {
 
 async function handleUpdateProjectById(req, res) {
   try {
-    const { title, description, status, usedTechnology, targetedPlatform } = req.body;
+    const { title, description, projectStatus, usedTechnology, targetedPlatform } = req.body;
     // Check if project already exists
-    const project = await Project.findByIdAndUpdate(req.params.id, { title, description, status, usedTechnology, targetedPlatform }, { new: true });
+    const project = await Project.findByIdAndUpdate(req.params.id, { title, description, projectStatus, usedTechnology, targetedPlatform }, { new: true });
     if (!project) {
       return res.status(404).json({ message: 'Project not found!' });
     }
@@ -78,11 +78,11 @@ async function handleDeleteProjectById(req, res) {
 const validateProject = [
   body('title').notEmpty().withMessage('The title field is required.'),
   body('description').notEmpty().withMessage('The description field is required.'),
-  body('status')
+  body('projectStatus')
     .notEmpty()
-    .withMessage('The status field is required.')
+    .withMessage('The projectStatus field is required.')
     .isIn(['active', 'inactive', 'completed'])
-    .withMessage('Invalid status. Status must be one of (active, inactive, completed).'),
+    .withMessage('Invalid projectStatus. projectStatus must be one of (active, inactive, completed).'),
   body('usedTechnology').notEmpty().withMessage('The usedTechnology field is required.'),
   body('targetedPlatform').notEmpty().withMessage('The targetedPlatform field is required.'),
 ];
@@ -111,7 +111,7 @@ async function handleCreateNewProject(req, res) {
     });
   }
 
-  const { title, description, status, usedTechnology, targetedPlatform } = req.body;
+  const { title, description, projectStatus, usedTechnology, targetedPlatform } = req.body;
 
   try {
     // Check if project already exists
@@ -147,7 +147,7 @@ async function handleCreateNewProject(req, res) {
       coverImageURL: imageUrl, // Use the ImageBB URL if available
       title,
       description,
-      status,
+      projectStatus,
       usedTechnology,
       targetedPlatform,
     });
