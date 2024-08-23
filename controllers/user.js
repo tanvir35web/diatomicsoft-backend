@@ -1,5 +1,8 @@
 const User = require("../models/user");
 const { setUser } = require("../services/auth");
+const { errorHandleFormater } = require("../services/errorHandlerFormat");
+const { body, validationResult } = require('express-validator');
+
 
 
 async function handleGetAllUsers(req, res) {
@@ -48,24 +51,32 @@ async function handleUserLogout(req, res) {
   }
 }
 
+
+const validateUserSignup = [
+  body('name').notEmpty().withMessage('The name field is required.'),
+  body('email').notEmpty().withMessage('The email field is required.'),
+  body('password').notEmpty().withMessage('The password field is required.'),
+];
+
 async function handleUserSignUp(req, res) {
+
+  const errors = validationResult(req);
+  errorHandleFormater(req, res, errors);
+
   const { name, email, password } = req.body;
-  //check all required fields are present
-  if (!name || !email || !password) {
-    return res.status(400).json({ message: 'All fields (name, email, password) are required!' });
-  }
+  
   // Check if email already exists
   const isExistingUser = await User.findOne({ email });
   if (isExistingUser) {
     return res.status(400).json({ message: 'Email already exists!' });
   }
   //checked password length
-  if (password.length < 6) {
+  if (password && password.length < 6) {
     return res.status(400).json({ message: 'Password should be at least 6 characters long!' });
   }
   try {
     const user = new User({
-      name,
+      name, 
       email,
       password,
     });
@@ -82,4 +93,5 @@ module.exports = {
   handleUserLogin,
   handleUserLogout,
   handleUserSignUp,
+  validateUserSignup,
 }
