@@ -1,26 +1,9 @@
 const Project = require("../models/project");
-const multer = require('multer');
 const path = require('path');
 const FormData = require('form-data');
 const axios = require('axios');
 const fs = require('fs');
 const { errorValidationMessageFormatter } = require("../errorValidation/errorValidationMessageFormatter");
-
-
-// multer config
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.resolve('upload/'));
-  },
-  filename: function (req, file, cb) {
-    const fileName = `${Date.now()}-${file.originalname}`;
-    cb(null, fileName);
-  }
-});
-
-
-const upload = multer({ storage: storage });
-
 
 
 async function handleGetAllProjects(req, res) {
@@ -75,12 +58,9 @@ async function handleDeleteProjectById(req, res) {
 };
 
 
-
 async function handleCreateNewProject(req, res) {
-
   const hasErrors = errorValidationMessageFormatter(req, res);
   if (hasErrors) return; // Stop further execution if there are validation errors
-  
 
   const { title, description, projectStatus, usedTechnology, targetedPlatform } = req.body;
 
@@ -95,22 +75,31 @@ async function handleCreateNewProject(req, res) {
 
     // Check if a file is uploaded
     if (req.file) {
-      // Upload image to ImageBB
       const filePath = path.resolve('upload/', req.file.filename);
       const formData = new FormData();
       formData.append('image', fs.createReadStream(filePath));
 
-      const response = await axios.post(`https://api.imgbb.com/1/upload?key=${process.env.IMGBB_API_KEY}`, formData, {
-        headers: {
-          ...formData.getHeaders(),
-        },
-      });
+      try {
+        // Upload image to ImageBB
+        const response = await axios.post(`https://api.imgbb.com/1/upload?key=${process.env.IMGBB_API_KEY}`, formData, {
+          headers: {
+            ...formData.getHeaders(),
+          },
+        });
 
-      // Delete the local file after successful upload
-      fs.unlinkSync(filePath);
-
-      // Get the ImageBB URL
-      imageUrl = response.data.data.url;
+        // Get the ImageBB URL
+        imageUrl = response.data.data.url;
+      } catch (uploadError) {
+        console.error('Error uploading image to ImageBB:', uploadError);
+        return res.status(500).json({ message: 'Error uploading image!' });
+      } finally {
+        // Delete the local file whether or not the upload succeeds
+        try {
+          fs.unlinkSync(filePath);
+        } catch (unlinkError) {
+          console.error('Error deleting file:', unlinkError);
+        }
+      }
     }
 
     // Create a new project with or without the ImageBB URL
@@ -128,7 +117,7 @@ async function handleCreateNewProject(req, res) {
     res.status(201).json({ message: 'Project created successfully', data: project });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server Error from project create!' });
+    res.status(500).json({ message: 'Server Error from project creation!' });
   }
 }
 
@@ -139,5 +128,4 @@ module.exports = {
   handleUpdateProjectById,
   handleDeleteProjectById,
   handleCreateNewProject,
-  upload,
 }; 

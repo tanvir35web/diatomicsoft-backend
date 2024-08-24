@@ -6,9 +6,9 @@ const {
   handleGetProjectById,
   handleUpdateProjectById,
   handleDeleteProjectById,
-  upload,
 } = require("../controllers/project");
 const { validateCreateProject } = require("../errorValidation/validationMassages");
+const upload = require("../multerConfig");
 
 const router = express.Router();
 
