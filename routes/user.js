@@ -1,12 +1,13 @@
 const express = require("express");
-const { handleGetAllUsers, handleUserSignUp, handleUserLogin, handleUserLogout, validateUserSignup } = require("../controllers/user");
+const { handleGetAllUsers, handleUserSignUp, handleUserLogin, handleUserLogout } = require("../controllers/user");
 const { restrictToLoggedInUserOnly } = require("../middlewares/auth");
+const { validateUserSignup, validateUserLogin } = require("../errorValidation/validationMassages");
 
 const router = express.Router();
 
 router.get("/users", restrictToLoggedInUserOnly, handleGetAllUsers);
 router.post("/signup", validateUserSignup, handleUserSignUp);
-router.post("/login", handleUserLogin);
+router.post("/login", validateUserLogin, handleUserLogin);
 router.post("/logout", handleUserLogout);
 
 

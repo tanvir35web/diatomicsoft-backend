@@ -1,7 +1,6 @@
+const { errorValidationMessageFormatter } = require("../errorValidation/errorValidationMessageFormatter");
 const User = require("../models/user");
 const { setUser } = require("../services/auth");
-const { body, validationResult } = require('express-validator');
-
 
 
 async function handleGetAllUsers(req, res) {
@@ -19,11 +18,12 @@ async function handleGetAllUsers(req, res) {
 
 
 async function handleUserLogin(req, res) {
+
+  const hasErrors = errorValidationMessageFormatter(req, res);
+  if (hasErrors) return; // Stop further execution if there are validation errors
+
   const { email, password } = req.body;
-  // Check if email and password are provided
-  if (!email || !password) {
-    return res.status(400).json({ message: 'Email and password are required!' });
-  }
+
   // Check if user exists with provided email and password
   const user = await User.findOne({ email, password });
   if (!user) {
@@ -51,37 +51,12 @@ async function handleUserLogout(req, res) {
 }
 
 
-const validateUserSignup = [
-  body('name').notEmpty().withMessage('The name field is required.'),
-  body('email').notEmpty().withMessage('The email field is required.'),
-  body('password').notEmpty().withMessage('The password field is required.'),
-];
-
 async function handleUserSignUp(req, res) {
 
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const groupedErrors = errors.array().reduce((acc, err) => {
-        if (!acc[err.path]) {
-            acc[err.path] = [];
-        }
-        acc[err.path].push(err.msg);
-        return acc;
-    }, {});
+  const hasErrors = errorValidationMessageFormatter(req, res);
+  if (hasErrors) return; // Stop further execution if there are validation errors
 
-    const firstErrorMessage = errors.array()[0].msg;
-    const additionalErrorsCount = errors.array().length - 1;
-    const summaryMessage = additionalErrorsCount > 0
-        ? `${firstErrorMessage} (and ${additionalErrorsCount} more error${additionalErrorsCount > 1 ? 's' : ''})`
-        : firstErrorMessage;
-
-    return res.status(422).json({
-        message: summaryMessage,
-        errors: groupedErrors,
-    });
-}
   const { name, email, password } = req.body;
-
 
   try {
     // Check if email already exists
@@ -112,5 +87,4 @@ module.exports = {
   handleUserLogin,
   handleUserLogout,
   handleUserSignUp,
-  validateUserSignup,
 }

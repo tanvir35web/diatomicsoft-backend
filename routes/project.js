@@ -7,8 +7,8 @@ const {
   handleUpdateProjectById,
   handleDeleteProjectById,
   upload,
-  validateProject,
 } = require("../controllers/project");
+const { validateCreateProject } = require("../errorValidation/validationMassages");
 
 const router = express.Router();
 
@@ -16,7 +16,7 @@ router.get("/", handleGetAllProjects);
 router.get("/:id", handleGetProjectById);
 router.patch("/:id", restrictToLoggedInUserOnly, handleUpdateProjectById);
 router.delete("/:id", restrictToLoggedInUserOnly, handleDeleteProjectById);
-router.post("/", upload.single('coverImage'), validateProject, handleCreateNewProject);
+router.post("/", upload.single('coverImage'), validateCreateProject, handleCreateNewProject);
 
 
 module.exports = router;

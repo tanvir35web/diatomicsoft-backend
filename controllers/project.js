@@ -4,7 +4,7 @@ const path = require('path');
 const FormData = require('form-data');
 const axios = require('axios');
 const fs = require('fs');
-const { body, validationResult } = require('express-validator');
+const { errorValidationMessageFormatter } = require("../errorValidation/errorValidationMessageFormatter");
 
 
 // multer config
@@ -20,7 +20,6 @@ const storage = multer.diskStorage({
 
 
 const upload = multer({ storage: storage });
-
 
 
 
@@ -75,41 +74,13 @@ async function handleDeleteProjectById(req, res) {
   }
 };
 
-const validateProject = [
-  body('title').notEmpty().withMessage('The title field is required.'),
-  body('description').notEmpty().withMessage('The description field is required.'),
-  body('projectStatus')
-    .notEmpty()
-    .withMessage('The projectStatus field is required.')
-    .isIn(['active', 'inactive', 'completed'])
-    .withMessage('Invalid projectStatus. projectStatus must be one of (active, inactive, completed).'),
-  body('usedTechnology').notEmpty().withMessage('The usedTechnology field is required.'),
-  body('targetedPlatform').notEmpty().withMessage('The targetedPlatform field is required.'),
-];
+
 
 async function handleCreateNewProject(req, res) {
-  const errors = validationResult(req);
 
-  if (!errors.isEmpty()) {
-    const groupedErrors = errors.array().reduce((acc, err) => {
-      if (!acc[err.path]) {
-        acc[err.path] = [];
-      }
-      acc[err.path].push(err.msg);
-      return acc;
-    }, {});
-
-    const firstErrorMessage = errors.array()[0].msg;
-    const additionalErrorsCount = errors.array().length - 1;
-    const summaryMessage = additionalErrorsCount > 0
-      ? `${firstErrorMessage} (and ${additionalErrorsCount} more error${additionalErrorsCount > 1 ? 's' : ''})`
-      : firstErrorMessage;
-
-    return res.status(422).json({
-      message: summaryMessage,
-      errors: groupedErrors,
-    });
-  }
+  const hasErrors = errorValidationMessageFormatter(req, res);
+  if (hasErrors) return; // Stop further execution if there are validation errors
+  
 
   const { title, description, projectStatus, usedTechnology, targetedPlatform } = req.body;
 
@@ -169,5 +140,4 @@ module.exports = {
   handleDeleteProjectById,
   handleCreateNewProject,
   upload,
-  validateProject,
 }; 
