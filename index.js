@@ -19,23 +19,17 @@ const PORT = process.env.PORT;
 //connect to MongoDB database
 connectToMongoDB(process.env.MONGO_URL);
 
+
 // Set up EJS for rendering views
 app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
+
 
 //middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.resolve("./public")));
-
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", '*'); // or '*'
-  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  next();
-});
-
 
 
 const allowedOrigins = [
@@ -46,18 +40,7 @@ const allowedOrigins = [
   // add more origins here
 ];
 
-// app.use(cors({
-//   origin: (origin, callback) => {
-//     if (!origin || allowedOrigins.includes(origin)) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   },
-//   credentials: true, 
-// }));
-
-app.options('*', cors({
+app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
@@ -65,7 +48,7 @@ app.options('*', cors({
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true,
+  credentials: true, 
 }));
 
 
