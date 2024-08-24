@@ -75,9 +75,14 @@ async function handleCreateNewProject(req, res) {
 
     // Check if a file is uploaded
     if (req.file) {
-      const filePath = path.resolve('upload/', req.file.filename);
+      // const filePath = path.resolve('upload/', req.file.filename);
+      // const formData = new FormData();
+      // formData.append('image', fs.createReadStream(filePath));
+      // Convert the file buffer to a base64 string
+
+      const base64Image = req.file.buffer.toString('base64');
       const formData = new FormData();
-      formData.append('image', fs.createReadStream(filePath));
+      formData.append('image', base64Image);
 
       try {
         // Upload image to ImageBB
@@ -92,13 +97,6 @@ async function handleCreateNewProject(req, res) {
       } catch (uploadError) {
         console.error('Error uploading image to ImageBB:', uploadError);
         return res.status(500).json({ message: 'Error uploading image!' });
-      } finally {
-        // Delete the local file whether or not the upload succeeds
-        try {
-          fs.unlinkSync(filePath);
-        } catch (unlinkError) {
-          console.error('Error deleting file:', unlinkError);
-        }
       }
     }
 
