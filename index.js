@@ -33,6 +33,7 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:8000',
   'https://diatomicsoft.vercel.app',
+  'https://diatomicsoft-backend-api.vercel.app/api/login',
   // add more origins here
 ];
 
