@@ -4,6 +4,7 @@ const { connectToMongoDB } = require("./connectMongoDB");
 const apiRouter = require("./routes/user");
 const projectRouter = require("./routes/project");
 const clientsReviewRouter = require("./routes/clientsReview");
+const blogsRouter = require("./routes/blogs");
 const cookieParser = require("cookie-parser");
 const path = require('path');
 const staticRouter = require("./routes/staticRoutes");
@@ -56,8 +57,9 @@ app.use(cors({
 app.use("/api", apiRouter);
 app.use("/api/projects", projectRouter);
 app.use("/api/clientReviews", clientsReviewRouter);
-// app.use('/', restrictToLoggedInUserOnly, staticRouter);
-app.use('/', staticRouter);
+app.use("/api/blogs", blogsRouter);
+
+// app.use('/', staticRouter);
 
 
 app.listen(PORT, console.log(`Server listening on ${PORT}`));
