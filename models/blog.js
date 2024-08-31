@@ -18,12 +18,10 @@ const blogSchema = new mongoose.Schema({
     required: true,
   },
 
-
   author: {
     type: String,
     required: true,
   },
-
 
   tags: {
     type: [String],

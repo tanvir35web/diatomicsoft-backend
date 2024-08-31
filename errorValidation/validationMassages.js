@@ -24,9 +24,17 @@ const validateCreateProject = [
     body('targetedPlatform').notEmpty().withMessage('The targetedPlatform field is required.'),
   ];
 
+  const validateBlogPost = [
+    body('title').notEmpty().withMessage('The title field is required.'),
+    body('description').notEmpty().withMessage('The description field is required.'),
+    body('author').notEmpty().withMessage('The author field is required.'),
+    body('tags').notEmpty().withMessage('The tags field is required.'),
+];
+
 
 module.exports = {
     validateUserSignup,
     validateUserLogin,
     validateCreateProject,
+    validateBlogPost,
 };

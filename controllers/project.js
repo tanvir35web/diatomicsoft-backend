@@ -1,9 +1,6 @@
 const Project = require("../models/project");
-const path = require('path');
-const FormData = require('form-data');
-const axios = require('axios');
-const fs = require('fs');
 const { errorValidationMessageFormatter } = require("../errorValidation/errorValidationMessageFormatter");
+const { imageUpload } = require("../services/imageUpload");
 
 
 async function handleGetAllProjects(req, res) {
@@ -71,38 +68,10 @@ async function handleCreateNewProject(req, res) {
       return res.status(422).json({ message: 'Project with the same title already exists!' });
     }
 
-    let imageUrl = null;
+    imageUpload(req, res);
 
-    // Check if a file is uploaded
-    if (req.file) {
-      // const filePath = path.resolve('upload/', req.file.filename);
-      // const formData = new FormData();
-      // formData.append('image', fs.createReadStream(filePath));
-      // Convert the file buffer to a base64 string
-
-      const base64Image = req.file.buffer.toString('base64');
-      const formData = new FormData();
-      formData.append('image', base64Image);
-
-      try {
-        // Upload image to ImageBB
-        const response = await axios.post(`https://api.imgbb.com/1/upload?key=${process.env.IMGBB_API_KEY}`, formData, {
-          headers: {
-            ...formData.getHeaders(),
-          },
-        });
-
-        // Get the ImageBB URL
-        imageUrl = response.data.data.url;
-      } catch (uploadError) {
-        console.error('Error uploading image to ImageBB:', uploadError);
-        return res.status(500).json({ message: 'Error uploading image!' });
-      }
-    }
-
-    // Create a new project with or without the ImageBB URL
     const project = new Project({
-      coverImageURL: imageUrl, // Use the ImageBB URL if available
+      coverImageURL: req.file? req.file.path : null, // Save the uploaded image path in the blog document 
       title,
       description,
       projectStatus,
@@ -111,7 +80,6 @@ async function handleCreateNewProject(req, res) {
     });
 
     await project.save();
-
     res.status(201).json({ message: 'Project created successfully', data: project });
   } catch (error) {
     console.error(error);
