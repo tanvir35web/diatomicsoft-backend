@@ -4,8 +4,6 @@ const projectSchema = new mongoose.Schema({
 
   coverImageURL: {
     type: String,
-    default: null,
-    required: false,
   },
 
   title: {

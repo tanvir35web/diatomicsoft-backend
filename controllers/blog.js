@@ -20,18 +20,14 @@ async function handleCreateBlog(req, res) {
   const {title, description, author, tags} = req.body;
 
   try {
-
-   imageUpload(req, res);
-
+   const imageUrl = await imageUpload(req);
    const newBlog = new Blog({
     title,
     description,
     author,
     tags,
-    imageUrl: req.file? req.file.path : null, // Save the uploaded image path in the blog document 
+    imageUrl: imageUrl || null, 
    })
-
-    // const newBlog = new Blog(req.body);
     const savedBlog = await newBlog.save();
     res.status(201).json({ message: 'Blog created successfully', data: savedBlog });
   } catch (error) {

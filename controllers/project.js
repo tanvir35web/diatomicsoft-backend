@@ -68,10 +68,10 @@ async function handleCreateNewProject(req, res) {
       return res.status(422).json({ message: 'Project with the same title already exists!' });
     }
 
-    imageUpload(req, res);
+    const imageUrl = await imageUpload(req);
 
     const project = new Project({
-      coverImageURL: req.file? req.file.path : null, // Save the uploaded image path in the blog document 
+      coverImageURL: imageUrl || null,
       title,
       description,
       projectStatus,
