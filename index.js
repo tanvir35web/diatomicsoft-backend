@@ -7,9 +7,7 @@ const clientsReviewRouter = require("./routes/clientsReview");
 const blogsRouter = require("./routes/blogs");
 const cookieParser = require("cookie-parser");
 const path = require('path');
-const staticRouter = require("./routes/staticRoutes");
-const { restrictToLoggedInUserOnly } = require("./middlewares/auth");
-const cors = require('cors')
+const corsConfig = require("./corsConfig");
 
 
 
@@ -33,24 +31,8 @@ app.use(cookieParser());
 app.use(express.static(path.resolve("./public")));
 
 
-const allowedOrigins = [
-  'http://localhost:3000',
-  'http://localhost:8000',
-  'https://diatomicsoft.vercel.app',
-  'https://diatomicsoft-v1.vercel.app',
-  // add more origins here
-];
-
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true, 
-}));
+// CORS Configuration
+corsConfig();
 
 
 //routes
@@ -59,7 +41,6 @@ app.use("/api/projects", projectRouter);
 app.use("/api/clientReviews", clientsReviewRouter);
 app.use("/api/blogs", blogsRouter);
 
-// app.use('/', staticRouter);
 
 
 app.listen(PORT, console.log(`Server listening on ${PORT}`));

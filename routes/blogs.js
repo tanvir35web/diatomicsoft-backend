@@ -10,10 +10,10 @@ const router = express.Router();
 
 
 router.get('/', handleGetAllBlogs);
-router.post('/', validateBlogPost, handleCreateBlog);
 router.get('/:id', handleGetBlogById);
-router.patch('/:id', handleUpdateBlogById);
-router.delete('/:id', handleDeleteBlogById);
+router.post('/', validateBlogPost, handleCreateBlog);
+router.patch('/:id', validateBlogPost, handleUpdateBlogById);
+router.delete('/:id', validateBlogPost, handleDeleteBlogById);
 
 
 module.exports = router;
