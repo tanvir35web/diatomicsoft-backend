@@ -7,7 +7,8 @@ const clientsReviewRouter = require("./routes/clientsReview");
 const blogsRouter = require("./routes/blogs");
 const cookieParser = require("cookie-parser");
 const path = require('path');
-const corsConfig = require("./corsConfig");
+const cors = require('cors')
+// const corsConfig = require("./corsConfig");
 
 
 
@@ -32,7 +33,23 @@ app.use(express.static(path.resolve("./public")));
 
 
 // CORS Configuration
-corsConfig();
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:8000',
+  'https://diatomicsoft.vercel.app',
+  'https://diatomicsoft-v1.vercel.app',
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
 
 
 //routes
