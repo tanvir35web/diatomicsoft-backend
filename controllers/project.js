@@ -28,6 +28,8 @@ async function handleGetProjectById(req, res) {
 
 async function handleUpdateProjectById(req, res) {
   try {
+    console.log('body', req.body);
+    
     const { title, description, projectStatus, usedTechnology, targetedPlatform } = req.body;
     // Check if project already exists
     const project = await Project.findByIdAndUpdate(req.params.id, { title, description, projectStatus, usedTechnology, targetedPlatform }, { new: true });
