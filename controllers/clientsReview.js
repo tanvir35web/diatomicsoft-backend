@@ -19,7 +19,7 @@ async function handleGetReviewById(req, res) {
     res.status(200).json({ message: 'Review fetched successfully by ID', data: review });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server Error from get reviw by Id!' });
+    res.status(500).json({ message: 'Server Error from get review by Id!' });
   }
 };
 
