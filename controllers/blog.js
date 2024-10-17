@@ -17,17 +17,17 @@ async function handleCreateBlog(req, res) {
   const hasErrors = errorValidationMessageFormatter(req, res);
   if (hasErrors) return; // Stop further execution if there are validation errors
 
-  const {title, description, author, tags} = req.body;
+  const { title, description, author, tags } = req.body;
 
   try {
-   const imageUrl = await imageUpload(req);
-   const newBlog = new Blog({
-    title,
-    description,
-    author,
-    tags,
-    imageUrl: imageUrl || null, 
-   })
+    const imageforBlog = await imageUpload(req);
+    const newBlog = new Blog({
+      title,
+      description,
+      author,
+      tags,
+      blogImage: imageforBlog || null,
+    })
     const savedBlog = await newBlog.save();
     res.status(201).json({ message: 'Blog created successfully', data: savedBlog });
   } catch (error) {
@@ -35,6 +35,42 @@ async function handleCreateBlog(req, res) {
     res.status(500).json({ message: 'Server Error from blog creation!' });
   }
 };
+
+
+// function handleCreateBlog(req, res) {
+//   const { title, description, author, tags } = req.body;
+
+//     // Log the incoming request body
+//     console.log('Request Body:', req.body);
+
+
+//   // Validate incoming fields
+//   if (!title || !description || !author || !tags) {
+//     return res.status(422).json({
+//       message: 'Validation errorsss',
+//       errors: {
+//         title: !title ? ['The title field is required.'] : [],
+//         description: !description ? ['The description field is required.'] : [],
+//         author: !author ? ['The author field is required.'] : [],
+//         tags: !tags ? ['The tags field is required.'] : [],
+//       }
+//     });
+//   }
+
+//   try {
+//     const newBlog = {
+//       title,
+//       description,
+//       author,
+//       tags
+//     };
+//     // Save your blog to the database (this is a placeholder)
+//     res.status(201).json({ message: 'Blog created successfully', data: newBlog });
+//   } catch (error) {
+//     console.error('Error creating blog:', error);
+//     res.status(500).json({ message: 'Server error occurred while creating the blog.' });
+//   }
+// };
 
 async function handleGetBlogById(req, res) {
   try {

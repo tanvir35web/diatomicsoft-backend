@@ -7,11 +7,13 @@ const { handleGetAllBlogs,
 } = require('../controllers/blog');
 const { validateBlogPost } = require('../errorValidation/validationMassages');
 const router = express.Router();
+const upload = require("../multerConfig");
+
 
 
 router.get('/', handleGetAllBlogs);
 router.get('/:id', handleGetBlogById);
-router.post('/', validateBlogPost, handleCreateBlog);
+router.post('/',  upload.single('image'), validateBlogPost, handleCreateBlog);
 router.patch('/:id', validateBlogPost, handleUpdateBlogById);
 router.delete('/:id', validateBlogPost, handleDeleteBlogById);
 
