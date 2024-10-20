@@ -6,7 +6,7 @@ const { imageUpload } = require("../services/imageUpload");
 async function handleGetAllProjects(req, res) {
   try {
     const projects = await Project.find();
-    res.status(200).json({ message: 'All projects fetched successfully', data: projects });
+    res.status(200).json({ message: 'All projects fetched successfully', data: projects.reverse() });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server Error!' });
