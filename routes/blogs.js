@@ -14,7 +14,7 @@ const upload = require("../multerConfig");
 router.get('/', handleGetAllBlogs);
 router.get('/:id', handleGetBlogById);
 router.post('/',  upload.single('image'), validateBlogPost, handleCreateBlog);
-router.patch('/:id', validateBlogPost, handleUpdateBlogById);
+router.patch('/:id', upload.single('image'), validateBlogPost, handleUpdateBlogById);
 router.delete('/:id', validateBlogPost, handleDeleteBlogById);
 
 

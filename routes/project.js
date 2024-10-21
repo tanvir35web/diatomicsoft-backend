@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.get("/", handleGetAllProjects);
 router.get("/:id", handleGetProjectById);
-router.patch("/:id", restrictToLoggedInUserOnly, handleUpdateProjectById);
+router.patch("/:id", upload.single('coverImage'), restrictToLoggedInUserOnly, handleUpdateProjectById);
 router.delete("/:id", restrictToLoggedInUserOnly, handleDeleteProjectById);
 router.post("/", upload.single('coverImage'), validateCreateProject, handleCreateNewProject);
 
