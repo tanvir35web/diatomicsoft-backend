@@ -38,6 +38,7 @@ const allowedOrigins = [
   'http://localhost:8000',
   'https://diatomicsoft.vercel.app',
   'https://diatomicsoft-v1.vercel.app',
+  'https://diatomicsoft.com/'
 ];
 
 app.use(cors({
